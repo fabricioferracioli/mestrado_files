@@ -14,6 +14,26 @@ if options.inputfile == options.outputfile:
 if options.inputfile == None:
     parser.error('please, inform a path for the input log file')
 
+extensions_to_exclude = ['.gif', '.png', '.jpg', '.jpeg', '.svg', '.ico', '.css', '.js']
+lines_included = 0
+lines_excluded = 0
+
 inputlogfile = open(options.inputfile, 'r')
+outputlogfile = open(options.outputfile, 'w')
+
 for line in inputlogfile:
-    print line
+    include_line = True
+    for extension in extensions_to_exclude:
+        if line.find(extension) != -1:
+            lines_excluded += 1
+            include_line = False
+            break
+    else:
+        if (include_line):
+            outputlogfile.write(line)
+            lines_included += 1
+inputlogfile.close()
+outputlogfile.close()
+print 'lines excluded: %d' %lines_excluded
+print 'lines included: %d' %lines_included
+print 'total lines: %d' %(lines_excluded + lines_included)
