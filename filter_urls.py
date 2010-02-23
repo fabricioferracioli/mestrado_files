@@ -54,15 +54,15 @@ for line in logfile:
                 outputfile.write(line)
                 break
     else:
-        print 'gravando para %s'%initial_urls[index_tested]
-        print 'buscando %s vezes'%final_urls[index_tested]
-        print 'buscas realizadas %d'%num_searches
-        print 'maximo a buscar %s'%max_req_between_urls[index_tested]
-        pattern = re.compile('.*\s/'+options.base_url+'.*/'+final_urls[index_tested]+'.*')
+        end_pattern = re.compile('.*\s/'+options.base_url+'.*/'+final_urls[index_tested]+'.*')
         if num_searches <= max_req_between_urls[index_tested]:
+            for index in range(len(initial_urls)):
+                begin_pattern = re.compile('.*\s/'+options.base_url+'.*/'+initial_urls[index]+'.*')
+                if begin_pattern.match(line):
+                    num_searches = 1
             outputfile.write(line)
             num_searches += 1
-            if pattern.match(line):
+            if end_pattern.match(line):
                 include_line = False
         else:
             include_line = False
