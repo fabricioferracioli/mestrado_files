@@ -24,6 +24,35 @@ class LogUtil:
     def calculateDiferenceBetweenTimes(self, beginTime, endTime)
         return datetime.datetime(beginTime['year'], beginTime['month'], beginTime['day'], beginTime['hour'], beginTime['minute'], beginTime['second']) - datetime.datetime(endTime['year'], endTime['month'], endTime['day'], endTime['hour'], endTime['minute'], endTime['second'])
 
+    def userHaveSession(self, sessions, user_id):
+        for session in sessions:
+            if (user_id == sessions['user_id'])
+                return True
+        return False
+
+    def userSessionPosition(self, sessions, user_id):
+        for i in range(len(sessions)):
+            if sessions[i]['user_id'] == user_id:
+                return i
+        return False
+
+    def createSessions(self, access, configs):
+        sessions = []
+        for ac in access:
+            #ja existem sessoes desse usuario?
+            if userHaveSession(sessions, ac['user_id']) == True:
+                pos = userSessionPosition(sessions, ac['user_id'])
+                for session in sessions['pos']:
+                    #para cada sessao de usuario verifico se ela possui a quantidade maxima de urls
+                    if 2 * quantidade de urls maxima:
+                    #se atingiu o tempo limite de sessao parada
+                    if maxIdleSessionTime:
+                    #se atingiu a url final para uma tarefa
+                    if url in urlFinais:
+            else:
+                #insiro o usuario e adiciono suas urls
+                sessions[].append({'user_id': ac['user_id']})
+
     def createNNInputFile(self, access, filename, maxurls, maxIdleSessionTime = 20):
         nnfile = open(filename, 'w')
         session_time = []
@@ -46,7 +75,7 @@ class LogUtil:
                     line = ac['page_id']
                     session_time.pop()
                     session_time.append(ac['request_date'])
-            else
+            else:
                 #se for um novo usuario apenas inicio uma nova linha com a id da pagina acessada
                 line += ac['page_id']+' '
                 session_time.append(ac['request_date'])

@@ -4,7 +4,7 @@
 #recebe como parametro o arquivo com as urls a serem filtradas pois ele possui os nomes dos arquivos gerados com as urls ja filtradas
 
 from optparse import OptionParser
-import logutil
+import logutil, sqlite3
 
 usage = 'usage: %prog -i input_file_path [options]'
 parser = OptionParser(usage)
@@ -49,7 +49,6 @@ def findPageBy(key, value):
 inputfile = open(options.inputfile, 'r')
 for line in inputfile:
     logfiles.append(line.split()[3])
-inputfile.close()
 
 lu = logutil.LogUtil()
 
@@ -68,4 +67,18 @@ for logfilepath in logfiles:
         server_response_status = lu.getServerResponseStatus(line)
         response_size = lu.getResponseSize(line)
 
-        access.append({'id': len(access)+1, 'page_id': findPageBy('page', document_requested)['id'], 'user_id': findUserBy('ip', requester)['id'], 'request_date': request_date, 'response_status': server_response_status, 'response_size': response_size})
+        access.append({'id': len(access)+1, 'page_id': findPageBy('page', document_requested)['id'], 'user_id': findUserBy('ip', requester)['id'], 'request_date': request_date, 'response_status': server_response_status, 'response_size': response_size}),
+
+for line in inputfile:
+    conf = line.split()
+    config['initial_url'] = findPageBy('page', conf[0])
+    config['final_url'] = findPageBy('page', conf[1])
+    config['max_urls'] = conf[2]
+    config['task_name'] = conf[3]
+inputfile.close()
+
+con = sqlite3.connect('database.sql')
+con.execute('create database users (id integer primary key, ip text)')
+con.execute('create database pages (id integer primary key, page text)')
+con.execute('create database access (id integer primary key, page_id integer foreign key(page_id) references pages(id), user_id integer foreign key (user_id) references users(id), time datetime)')
+con.execute('create database configs (id interger primary key, initial_page_id integer foreign key(initial_page_id) references pages(id), final_page_id integer foreign key (final_page_id) references pages(id), max_urls integer, task_name text)')
