@@ -78,7 +78,11 @@ for line in inputfile:
 inputfile.close()
 
 con = sqlite3.connect('database.sql')
-con.execute('create database users (id integer primary key, ip text)')
-con.execute('create database pages (id integer primary key, page text)')
-con.execute('create database access (id integer primary key, page_id integer foreign key(page_id) references pages(id), user_id integer foreign key (user_id) references users(id), time datetime)')
-con.execute('create database configs (id interger primary key, initial_page_id integer foreign key(initial_page_id) references pages(id), final_page_id integer foreign key (final_page_id) references pages(id), max_urls integer, task_name text)')
+con.execute('create table users (id integer primary key, ip text)')
+con.execute('create table pages (id integer primary key, page text)')
+con.execute('create table access (id integer primary key, page_id integer foreign key(page_id) references pages(id), user_id integer foreign key (user_id) references users(id), request_date datetime, response_status integer, response_size integer)')
+con.execute('create table configs (id integer primary key, initial_page_id integer foreign key(initial_page_id) references pages(id), final_page_id integer foreign key (final_page_id) references pages(id), max_urls integer, task_name text)')
+for user in users:
+    con.execute('insert into users (ip) values (?)', user['ip'])
+for page in pages:
+    con.execute('insert into pages (page) values (?)', page['page'])

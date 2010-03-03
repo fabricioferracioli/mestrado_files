@@ -43,7 +43,10 @@ class LogUtil:
             if userHaveSession(sessions, ac['user_id']) == True:
                 pos = userSessionPosition(sessions, ac['user_id'])
                 for session in sessions['pos']:
-                    #para cada sessao de usuario verifico se ela possui a quantidade maxima de urls
+                    #para cada sessao de usuario verifico:
+                    #se ela possui a quantidade maxima de urls
+                    for us in session:
+
                     if 2 * quantidade de urls maxima:
                     #se atingiu o tempo limite de sessao parada
                     if maxIdleSessionTime:
