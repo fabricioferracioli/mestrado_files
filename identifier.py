@@ -4,7 +4,7 @@
 #recebe como parametro o arquivo com as urls a serem filtradas pois ele possui os nomes dos arquivos gerados com as urls ja filtradas
 
 from optparse import OptionParser
-import logutil, sqlite3
+import logutil, mining_database
 
 usage = 'usage: %prog -i input_file_path [options]'
 parser = OptionParser(usage)
@@ -16,73 +16,36 @@ parser.add_option('-i', '--input', dest='inputfile', help='read the INPUTFILE as
 if options.inputfile == None:
     parser.error('please, inform a path for the input file')
 
-
-users = []
-pages = []
-access = []
 logfiles = []
-
-def isInUsers(userIP):
-    for u in users:
-        if u['ip'] == userIP:
-            return True
-    return False
-
-def findUserBy(key, value):
-    for u in users:
-        if u[key] == value:
-            return u
-    return None
-
-def isInPages(page):
-    for p in pages:
-        if p['page'] == page:
-            return True
-    return False
-
-def findPageBy(key, value):
-    for p in pages:
-        if p[key] == value:
-            return p
-    return None
-
 inputfile = open(options.inputfile, 'r')
 for line in inputfile:
     logfiles.append(line.split()[3])
+inputfile.close()
 
 lu = logutil.LogUtil()
+db = mining_database.MiningDatabase()
+db.createTables()
 
 for logfilepath in logfiles:
     logfile = open(logfilepath, 'r')
     for line in logfile:
         requester = lu.getRequester(line)
-        if isInUsers(requester) == False:
-            users.append({'id': len(users)+1, 'ip': requester})
+        if len(db.searchUser('ip', 'like', requester).fetchall()) == 0:
+            db.insertUser(requester)
 
         document_requested = lu.getRequestedDocument(line)
-        if isInPages(document_requested) == False:
-            pages.append({'id': len(pages)+1, 'page': document_requested})
+        if len(db.searchPage('page', 'like', document_requested).fetchall()) == 0:
+            db.insertPage(document_requested)
 
         request_date = lu.getRequestDate(line)
         server_response_status = lu.getServerResponseStatus(line)
         response_size = lu.getResponseSize(line)
 
-        access.append({'id': len(access)+1, 'page_id': findPageBy('page', document_requested)['id'], 'user_id': findUserBy('ip', requester)['id'], 'request_date': request_date, 'response_status': server_response_status, 'response_size': response_size}),
+        db.insertAccess(requester, document_requested, request_date, server_response_status, response_size)
 
+inputfile = open(options.inputfile, 'r')
 for line in inputfile:
     conf = line.split()
-    config['initial_url'] = findPageBy('page', conf[0])
-    config['final_url'] = findPageBy('page', conf[1])
-    config['max_urls'] = conf[2]
-    config['task_name'] = conf[3]
+    print 'inserting config %s, %s, %s, %s'%(conf[0], conf[1], conf[2], conf[3])
+    db.insertConfig(conf[0], conf[1], conf[2], conf[3])
 inputfile.close()
-
-con = sqlite3.connect('database.sql')
-con.execute('create table users (id integer primary key, ip text)')
-con.execute('create table pages (id integer primary key, page text)')
-con.execute('create table access (id integer primary key, page_id integer foreign key(page_id) references pages(id), user_id integer foreign key (user_id) references users(id), request_date datetime, response_status integer, response_size integer)')
-con.execute('create table configs (id integer primary key, initial_page_id integer foreign key(initial_page_id) references pages(id), final_page_id integer foreign key (final_page_id) references pages(id), max_urls integer, task_name text)')
-for user in users:
-    con.execute('insert into users (ip) values (?)', user['ip'])
-for page in pages:
-    con.execute('insert into pages (page) values (?)', page['page'])
