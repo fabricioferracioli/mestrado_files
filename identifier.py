@@ -10,21 +10,28 @@ usage = 'usage: %prog -i input_file_path [options]'
 parser = OptionParser(usage)
 #optionparser sempre assume que a opcao sera do tipo string e que deve armazenar em dest
 parser.add_option('-i', '--input', dest='inputfile', help='read the INPUTFILE as parameters defined by user to access the correct filtered logfiles', metavar='INPUTFILE')
+parser.add_option('-f', '--force', dest='force_db_creation', help='force the database creation. if it exists, create again', default=False)
 (options, args) = parser.parse_args()
-
 
 if options.inputfile == None:
     parser.error('please, inform a path for the input file')
+if options.force_db_creation != False:
+    options.force_db_creation = True
+
+db = mining_database.MiningDatabase(options.force_db_creation)
+db.createTables()
 
 logfiles = []
 inputfile = open(options.inputfile, 'r')
 for line in inputfile:
-    logfiles.append(line.split()[3])
+    conf = line.split()
+    logfiles.append(conf[3])
+    db.insertPage(conf[0])
+    db.insertPage(conf[1])
+    db.insertConfig(conf[0], conf[1], conf[2], conf[3])
 inputfile.close()
 
 lu = logutil.LogUtil()
-db = mining_database.MiningDatabase()
-db.createTables()
 
 for logfilepath in logfiles:
     logfile = open(logfilepath, 'r')
@@ -42,10 +49,3 @@ for logfilepath in logfiles:
         response_size = lu.getResponseSize(line)
 
         db.insertAccess(requester, document_requested, request_date, server_response_status, response_size)
-
-inputfile = open(options.inputfile, 'r')
-for line in inputfile:
-    conf = line.split()
-    print 'inserting config %s, %s, %s, %s'%(conf[0], conf[1], conf[2], conf[3])
-    db.insertConfig(conf[0], conf[1], conf[2], conf[3])
-inputfile.close()

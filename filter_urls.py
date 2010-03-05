@@ -46,23 +46,23 @@ for line in logfile:
     if include_line == False:
         num_searches = 0
         for index in range(len(initial_urls)):
-            pattern = re.compile('.*\s/'+options.base_url+'.*/'+initial_urls[index]+'.*')
-            if pattern.match(line):
+            #pattern = re.compile('.*'+initial_urls[index]+'.*')
+            if line.find(initial_urls[index]) >= 0:
                 index_tested = index
                 num_searches += 1
                 include_line = True
                 outputfile.write(line)
                 break
     else:
-        end_pattern = re.compile('.*\s/'+options.base_url+'.*/'+final_urls[index_tested]+'.*')
+        #end_pattern = re.compile('.'+final_urls[index_tested]+'.*')
         if num_searches <= max_req_between_urls[index_tested]:
             for index in range(len(initial_urls)):
-                begin_pattern = re.compile('.*\s/'+options.base_url+'.*/'+initial_urls[index]+'.*')
-                if begin_pattern.match(line):
+                #begin_pattern = re.compile('.'+initial_urls[index]+'.*')
+                if line.find(initial_urls[index]) >= 0:
                     num_searches = 1
             outputfile.write(line)
             num_searches += 1
-            if end_pattern.match(line):
+            if line.find(final_urls[index_tested]) >= 0:
                 include_line = False
         else:
             include_line = False

@@ -5,8 +5,13 @@ import sqlite3
 
 class MiningDatabase:
 
-    def __init__(self):
+    def __init__(self, forceCreation):
         self.connection = sqlite3.connect('mining.db')
+        if forceCreation == True:
+            self.connection.execute('drop table if exists access')
+            self.connection.execute('drop table if exists configs')
+            self.connection.execute('drop table if exists users')
+            self.connection.execute('drop table if exists pages')
 
     def createTables(self):
         tables = {
@@ -41,8 +46,8 @@ class MiningDatabase:
         self.connection.commit()
 
     def insertConfig(self, initialPage, finalPage, maxUrls, taskName):
-        initial_page = self.searchPage('ip', 'like', initialPage)
-        final_page = self.searchPage('ip', 'like', finalPage)
+        initial_page = self.searchPage('page', 'like', initialPage)
+        final_page = self.searchPage('page', 'like', finalPage)
         self.connection.execute('insert into configs (initial_page_id, final_page_id, max_urls, task_name) values (?, ?, ?, ?)', [initial_page.fetchall()[0][0], final_page.fetchall()[0][0], maxUrls, taskName])
         self.connection.commit()
 
@@ -56,6 +61,10 @@ class MiningDatabase:
         date = date[0:date.find(' ')]
         date = date.replace(':', ' ', 1)
         return date
+
+    def teste()
+        first_access = self.connection.execute('select min(id) from access')
+        access = self.connection.execute('select * from access where id = (?)', [first_access.fetchone()[0]])
 
     def __del__(self):
         self.connection.close()

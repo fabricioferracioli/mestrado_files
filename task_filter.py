@@ -31,7 +31,7 @@ def isFinalUrl(line, tasks):
 usage = 'usage: %prog -l tasks_log_file_path -t tasks_urls [options]'
 parser = OptionParser(usage)
 #optionparser sempre assume que a opcao sera do tipo string e que deve armazenar em dest
-parser.add_option('-l', '--log', dest='logfile', help='read the LOGFILE as input with urls accesed by users, outputed by filter_urls', metavar='LOGFILE')
+parser.add_option('-l', '--log', dest='logfile', help='read the LOGFILE as input with urls accessed by users, outputed by filter_urls', metavar='LOGFILE')
 parser.add_option('-t', '--tasks', dest='tasksfile', help='urls from the taks to be separated URLFILE', metavar='URLFILE')
 (options, args) = parser.parse_args()
 
@@ -58,7 +58,7 @@ for line in logfile:
         if task_index == -1:
             outputfile.close()
         task_index = findActualTask(tasks, line)
-        outputfile = open(tasks[task_index]['id'], 'a')
+        outputfile = open(tasks[task_index]['id'], 'w')
         outputfile.write(line)
         num_searches = 1
     else:
