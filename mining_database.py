@@ -32,8 +32,11 @@ class MiningDatabase:
         return self.connection.execute('select * from users where '+findBy+' '+operator+' ? ', [findValue])
 
     def insertPage(self, page):
-        self.connection.execute('insert into pages(page) values (?)', [page])
-        self.connection.commit()
+        try:
+            self.connection.execute('insert into pages(page) values (?)', [page])
+            self.connection.commit()
+        except sqlite3.IntegrityError:
+            print 'Pagina ja inserida'
 
     def searchPage(self, findBy, operator, findValue):
         return self.connection.execute('select * from pages where '+findBy+' '+operator+' ? ', [findValue])
@@ -62,7 +65,7 @@ class MiningDatabase:
         date = date.replace(':', ' ', 1)
         return date
 
-    def teste()
+    def teste():
         first_access = self.connection.execute('select min(id) from access')
         access = self.connection.execute('select * from access where id = (?)', [first_access.fetchone()[0]])
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/pyhton
-#receives two input files, one is a filtered web server log file and another the urls that will be filtered defined by user
+# segundo script a rodar, recebe a saida do primeiro e um arquivo com as urls que deve procurar. receives two input files, one is a filtered web server log file and another the urls that will be filtered defined by user
 
 from optparse import OptionParser
 import re
@@ -9,7 +9,7 @@ parser = OptionParser(usage)
 #optionparser sempre assume que a opcao sera do tipo string e que deve armazenar em dest
 parser.add_option('-l', '--log', dest='logfile', help='read the LOGFILE as input log file', metavar='LOGFILE')
 parser.add_option('-u', '--urls', dest='urlsfile', help='urls to be filtered URLFILE', metavar='URLFILE')
-parser.add_option('-b', '--baseurl', dest='base_url', help='base url BASEURL used as prefix to all urls to be filtered', metavar='BASEURL')
+#parser.add_option('-b', '--baseurl', dest='base_url', help='base url BASEURL used as prefix to all urls to be filtered', metavar='BASEURL')
 (options, args) = parser.parse_args()
 
 if options.logfile == None:
@@ -18,8 +18,8 @@ if options.urlsfile == None:
     parser.error('please, inform a path for the input log file')
 if options.logfile == options.urlsfile:
     parser.error('the logfile (-l) and the urlsfile (-u) cannot be equal')
-if options.base_url == None:
-    parser.error('please, inform the base url')
+#if options.base_url == None:
+    #parser.error('please, inform the base url')
 
 #initial urls from the tasks to be filtered
 initial_urls = []

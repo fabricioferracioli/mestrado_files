@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/pyhton
-#identificador de usuarios, paginas e reconhecimento de acessos (sessoes)
+#quarto programa a rodar identificador de usuarios, paginas e reconhecimento de acessos (sessoes)
 #recebe como parametro o arquivo com as urls a serem filtradas pois ele possui os nomes dos arquivos gerados com as urls ja filtradas
 
 from optparse import OptionParser

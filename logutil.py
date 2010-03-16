@@ -16,10 +16,18 @@ class LogUtil:
         return logline[logline.index('"'):logline.rindex('"')].split()[1]
 
     def getServerResponseStatus(self, logline):
-        return logline[logline.rindex('"'):].split()[1]
+        try:
+            reponse = logline[logline.rindex('"'):].split()[1]
+        except IndexError:
+            response = logline.split('"')[2].split()[0]
+        return response
 
     def getResponseSize(self, logline):
-        return logline[logline.rindex('"'):].split()[2]
+        try:
+            size = logline[logline.rindex('"'):].split()[2]
+        except IndexError:
+            size = logline.split('"')[2].split()[0]
+        return
 
     #def calculateDiferenceBetweenTimes(self, beginTime, endTime):
         #return datetime.datetime(beginTime['year'], beginTime['month'], beginTime['day'], beginTime['hour'], beginTime['minute'], beginTime['second']) - datetime.datetime(endTime['year'], endTime['month'], endTime['day'], endTime['hour'], endTime['minute'], endTime['second'])

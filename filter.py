@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/pyhton
+# primeiro script a rodar, recebe o arquivo de log bruto como entrada
 
 from optparse import OptionParser
 usage = 'usage: %prog -i inputfilepath [options]'

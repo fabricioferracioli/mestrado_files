@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/pyhton
-#recebe o arquivo com as tarefas desejadas e separa as tarefas
+#terceiro programa a ser rodado recebe o arquivo com as tarefas desejadas e separa as tarefas
 #o arquivo de entrada com as tarefas é o mesmo utilizado no filter_urls, mas utiliza o ultimo parametro da linha
 
 from optparse import OptionParser
@@ -58,7 +58,7 @@ for line in logfile:
         if task_index == -1:
             outputfile.close()
         task_index = findActualTask(tasks, line)
-        outputfile = open(tasks[task_index]['id'], 'w')
+        outputfile = open(tasks[task_index]['id'], 'a')
         outputfile.write(line)
         num_searches = 1
     else:
