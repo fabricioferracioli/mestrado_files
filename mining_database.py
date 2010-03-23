@@ -5,7 +5,7 @@ import sqlite3
 
 class MiningDatabase:
 
-    def __init__(self, forceCreation):
+    def __init__(self, forceCreation = False):
         self.connection = sqlite3.connect('mining.db')
         if forceCreation == True:
             self.connection.execute('drop table if exists access')
@@ -29,7 +29,7 @@ class MiningDatabase:
         self.connection.commit()
 
     def searchUser(self, findBy, operator, findValue):
-        return self.connection.execute('select * from users where '+findBy+' '+operator+' ? ', [findValue])
+        return self.connection.execute('select * from users where '+findBy+' '+operator+' (?) ', [findValue])
 
     def insertPage(self, page):
         try:
@@ -39,7 +39,7 @@ class MiningDatabase:
             print 'Pagina ja inserida'
 
     def searchPage(self, findBy, operator, findValue):
-        return self.connection.execute('select * from pages where '+findBy+' '+operator+' ? ', [findValue])
+        return self.connection.execute('select * from pages where '+findBy+' '+operator+' (?) ', [findValue])
 
     def insertAccess(self, userIp, page_path, request_date, response_status, response_size):
         user = self.searchUser('ip', 'LIKE', userIp)
@@ -55,7 +55,7 @@ class MiningDatabase:
         self.connection.commit()
 
     def searchConfig(self, findBy, operator, findValue):
-        return self.connection.execute('select * from configs where '+findBy+' '+operator+' ? ', [findValue])
+        return self.connection.execute('select * from configs where '+findBy+' '+operator+' (?) ', [findValue])
 
     def normalizeDate(self, date):
         month = {'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04', 'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08', 'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'}
@@ -64,6 +64,9 @@ class MiningDatabase:
         date = date[0:date.find(' ')]
         date = date.replace(':', ' ', 1)
         return date
+
+    def customQuery(self, query):
+        return self.connection.execute(query)
 
     def teste():
         first_access = self.connection.execute('select min(id) from access')
