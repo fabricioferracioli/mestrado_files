@@ -34,18 +34,21 @@ inputfile.close()
 lu = logutil.LogUtil()
 
 for logfilepath in logfiles:
-    logfile = open(logfilepath, 'r')
-    for line in logfile:
-        requester = lu.getRequester(line)
-        if len(db.searchUser('ip', 'like', requester).fetchall()) == 0:
-            db.insertUser(requester)
+    try:
+        logfile = open(logfilepath, 'r')
+        for line in logfile:
+            requester = lu.getRequester(line)
+            if len(db.searchUser('ip', 'like', requester).fetchall()) == 0:
+                db.insertUser(requester)
 
-        document_requested = lu.getRequestedDocument(line)
-        if len(db.searchPage('page', 'like', document_requested).fetchall()) == 0:
-            db.insertPage(document_requested)
+            document_requested = lu.getRequestedDocument(line)
+            if len(db.searchPage('page', 'like', document_requested).fetchall()) == 0:
+                db.insertPage(document_requested)
 
-        request_date = lu.getRequestDate(line)
-        server_response_status = lu.getServerResponseStatus(line)
-        response_size = lu.getResponseSize(line)
+            request_date = lu.getRequestDate(line)
+            server_response_status = lu.getServerResponseStatus(line)
+            response_size = lu.getResponseSize(line)
 
-        db.insertAccess(requester, document_requested, request_date, server_response_status, response_size)
+            db.insertAccess(requester, document_requested, request_date, server_response_status, response_size)
+    except IOError:
+        print 'Arquivo '+ logfilepath +' nao encontrado'

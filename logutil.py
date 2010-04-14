@@ -17,7 +17,7 @@ class LogUtil:
 
     def getServerResponseStatus(self, logline):
         try:
-            reponse = logline[logline.rindex('"'):].split()[1]
+            response = logline[logline.rindex('"'):].split()[1]
         except IndexError:
             response = logline.split('"')[2].split()[0]
         return response

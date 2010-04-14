@@ -2,6 +2,12 @@
 #!/usr/bin/pyhton
 # segundo script a rodar, recebe a saida do primeiro e um arquivo com as urls que deve procurar. receives two input files, one is a filtered web server log file and another the urls that will be filtered defined by user
 
+def isInGroup(searchFor, inGroup):
+    for index in range(len(inGroup)):
+        if searchFor.find(inGroup[index]) >= 0:
+            return True
+    return False
+
 from optparse import OptionParser
 import re
 usage = 'usage: %prog -l input_log_file_path -u input_urls -b base_url [options]'
@@ -56,15 +62,15 @@ for line in logfile:
     else:
         #end_pattern = re.compile('.'+final_urls[index_tested]+'.*')
         if num_searches <= max_req_between_urls[index_tested]:
-            for index in range(len(initial_urls)):
-                #begin_pattern = re.compile('.'+initial_urls[index]+'.*')
-                if line.find(initial_urls[index]) >= 0:
-                    num_searches = 1
+            if isInGroup(line, initial_urls) == True:
+                num_searches = 1
             outputfile.write(line)
             num_searches += 1
             if line.find(final_urls[index_tested]) >= 0:
                 include_line = False
         else:
+            if isInGroup(line, initial_urls) == True:
+                outputfile.write(line)
             include_line = False
 logfile.close()
 outputfile.close()
