@@ -21,31 +21,36 @@ def reachMaxIdleTime(firstAccessTime, secondAccessTime):
     return timeBetweenRequests(firstAccessTime, secondAccessTime) > datetime.timedelta(0,0,0,0,20)
 
 def userCompletedTheTask(urlSequence, initialAccess, taskConfigs):
-#AQUI ESTA O PROBLEMA - TUDO CHEGA MUITO BEM ATE AQUI, MAS A SESSAO NAO ESTA SENDO MUITO BEM IDENTIFICADA
-#VERIFICAR SE ESTA REALMENTE FILTRANDO POR TAREFAS DIFERENTES, SE A LINHA ESTA SENDO INICIADA NO MOMENTO CORRETO
-#SE O CALCULO DE TEMPO ENTRE DUAS REQUISICOES ESTA CORRETO
-    for config in taskConfigs:
-        line = str(initialAccess[1]) + ' '
-        for i in range(len(urlSequence)):
-            ##verifico se ele abortou e comecou qualquer outra tarefa
-            if (urlSequence[i][1] == config[1]):
-                print 'outra tarefa foi iniciada'
-                return false
-            #agora devo verificar o tempo de acesso entre duas urls (atual - anterior)
+    line = str(initialAccess[1])
+    for i in range(len(urlSequence)):
+        ##verifico se ele abortou e comecou qualquer outra tarefa
+        if (urlSequence[i][1] == config[1]):
+            print 'outra tarefa foi iniciada'
+            return false
+        #agora devo verificar o tempo de acesso entre duas urls (atual - anterior)
 
-            startNewSession = False
-            if (i == 0):
-                startNewSession = reachMaxIdleTime(initialAccess[3], urlSequence[i][3])
-            else:
-                startNewSession = reachMaxIdleTime(urlSequence[i-1][3], urlSequence[i][3])
+        startNewSession = False
+        if (i == 0):
+            startNewSession = reachMaxIdleTime(initialAccess[3], urlSequence[i][3])
+        else:
+            startNewSession = reachMaxIdleTime(urlSequence[i-1][3], urlSequence[i][3])
 
-            if (startNewSession == False):
-                line = line + str(urlSequence[i][1]) + ' '
-            else:
-                print line
-                line = ''
-        print line
+        if (startNewSession == False):
+            line = line + ' ' + str(urlSequence[i][1])
+        else:
+            #as urls depois de expirada a sessao sao ignoradas
+            print 'sessao expirada'
+            return line
+    return line
 
+def normalizeLine(line, maxUrls, withTime = False):
+    if withTime == True:
+        if len(line.split()) < maxUrls * 2:
+            line = line + (maxUrls*2 - len(line.split())) * ' 0 :00'
+    else:
+        if len(line.split()) < maxUrls:
+            line = line + (maxUrls - len(line.split())) * ' 0'
+    return line
 
 db = mining_database.MiningDatabase();
 configs = db.searchConfig('1', '!=', '2').fetchall()
@@ -66,4 +71,7 @@ for config in configs:
         #devo cuidar para nao ter outro inicio de tarefa entre as requisicoes
         requests = subsequent_requests.fetchall()
         if len(requests) > 0:
-            userCompletedTheTask(requests, begin_of_tasks[i], configs)
+            line = userCompletedTheTask(requests, begin_of_tasks[i], configs)
+        else:
+            line = str(begin_of_tasks[i][1])
+        print normalizeLine(line, config[3])
