@@ -2,7 +2,7 @@
 #!/usr/bin/pyhton
 # script geral do filtro
 
-import logutil, mining_database
+import logutil, mining_database, datetime
 
 class LogFilter:
 
@@ -38,6 +38,55 @@ class LogFilter:
             if line.find(task['final_url']) != -1:
                 return True
         return False
+
+    def timeBetweenRequests(self, firstAccess, secondAccess):
+        fd = firstAccess.split()[0].split('-')
+        ft = firstAccess.split()[1].split(':')
+
+        fdt = datetime.datetime(int(fd[2]), int(fd[1]), int(fd[0]), int(ft[0]), int(ft[1]), int(ft[2]))
+
+        sd = secondAccess.split()[0].split('-')
+        st = secondAccess.split()[1].split(':')
+
+        stf = datetime.datetime(int(sd[2]), int(sd[1]), int(sd[0]), int(st[0]), int(st[1]), int(st[2]))
+        return stf - fdt
+
+    def reachMaxIdleTime(self, firstAccessTime, secondAccessTime):
+        #20 minutos
+        return self.timeBetweenRequests(firstAccessTime, secondAccessTime) > datetime.timedelta(0,0,0,0,20)
+
+    def userCompletedTheTask(self, urlSequence, initialAccess, taskConfigs):
+        line = str(initialAccess[1])
+        for i in range(len(urlSequence)):
+            #verifico se ele abortou e comecou qualquer outra tarefa
+            for config in taskConfigs:
+                if (urlSequence[i][1] == config[1]):
+                    print 'outra tarefa foi iniciada'
+                    return False
+            #agora devo verificar o tempo de acesso entre duas urls (atual - anterior)
+
+            startNewSession = False
+            if (i == 0):
+                startNewSession = self.reachMaxIdleTime(initialAccess[3], urlSequence[i][3])
+            else:
+                startNewSession = self.reachMaxIdleTime(urlSequence[i-1][3], urlSequence[i][3])
+
+            if (startNewSession == False):
+                line = line + ' ' + str(urlSequence[i][1])
+            else:
+                #as urls depois de expirada a sessao sao ignoradas
+                print 'sessao expirada'
+                return line
+        return line
+
+    def normalizeLine(self, line, maxUrls, withTime = False):
+        if withTime == True:
+            if len(line.split()) < maxUrls * 2:
+                line = line + (maxUrls*2 - len(line.split())) * ' 0 :00'
+        else:
+            if len(line.split()) < maxUrls:
+                line = line + (maxUrls - len(line.split())) * ' 0'
+        return line
 
     def initialFilter(self, logFile, filteredLog = 'output.log'):
         if (logFile == None):
@@ -188,3 +237,30 @@ class LogFilter:
             except IOError:
                 print 'Arquivo '+ logfilepath +' nao encontrado'
         return True
+
+    def sessions(self):
+        db = mining_database.MiningDatabase();
+        configs = db.searchConfig('1', '!=', '2').fetchall()
+
+        #com as ids das requisicoes iniciais realizo a separacao das sessoes por tarefa
+        for config in configs:
+            begin_of_tasks = db.customQuery('select * from access where page_id = '+str(config[1])).fetchall()
+            #com o inicio das tarefas posso realizar a captura da sequencia de urls acessadas
+            for i in range(len(begin_of_tasks)):
+                if i < len(begin_of_tasks) - 1:
+                    subsequent_requests = db.customQuery('select * from access where id > '+str(begin_of_tasks[i][0])+' AND user_id = '+str(+begin_of_tasks[i][2])+' AND id < '+ str(begin_of_tasks[i+1][0]) +' limit '+str(config[3]))
+                else:
+                    subsequent_requests = db.customQuery('select * from access where id > '+str(begin_of_tasks[i][0])+' AND user_id = '+str(+begin_of_tasks[i][2])+' limit '+str(config[3]))
+
+                #nesse ponto tenho os acessos subsequentes ao inicio da tarefa atual para um usuario com a quantidade maxima de urls possiveis para aquela tarefa
+                #devo verificar se o usuario chega a url final
+                #devo verificar se ele atinge o tempo limite de sessao
+                #devo cuidar para nao ter outro inicio de tarefa entre as requisicoes
+                requests = subsequent_requests.fetchall()
+                if len(requests) > 0:
+                    line = self.userCompletedTheTask(requests, begin_of_tasks[i], configs)
+                else:
+                    line = str(begin_of_tasks[i][1])
+
+                if line != False:
+                    print self.normalizeLine(line, config[3])

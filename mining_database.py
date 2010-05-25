@@ -44,8 +44,12 @@ class MiningDatabase:
     def insertAccess(self, userIp, page_path, request_date, response_status, response_size):
         user = self.searchUser('ip', 'LIKE', userIp)
         page = self.searchPage('page', 'LIKE', page_path)
+
+        user_id = user.fetchall()[0][0]
+        page_id = page.fetchall()[0][0]
+
         request_date = self.normalizeDate(request_date)
-        self.connection.execute('insert into access(page_id, user_id, request_date, response_status, response_size) values (?, ?, ?, ?, ?)', [page.fetchall()[0][0], user.fetchall()[0][0], request_date, response_status, response_size])
+        self.connection.execute('insert into access(page_id, user_id, request_date, response_status, response_size) values (?, ?, ?, ?, ?)', [page_id, user_id, request_date, response_status, response_size])
         self.connection.commit()
 
     def insertConfig(self, initialPage, finalPage, maxUrls, taskName):

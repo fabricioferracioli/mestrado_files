@@ -38,3 +38,7 @@ print '-- Tasks Filter finished --'
 lf.itentifyTasks(options.forcedbcreation)
 
 print '-- Tasks Identified --'
+
+lf.sessions()
+
+print '-- Sessions identified --'

@@ -24,6 +24,9 @@ def userCompletedTheTask(urlSequence, initialAccess, taskConfigs):
     line = str(initialAccess[1])
     for i in range(len(urlSequence)):
         ##verifico se ele abortou e comecou qualquer outra tarefa
+        print config
+        print initialAccess
+        print taskConfigs
         if (urlSequence[i][1] == config[1]):
             print 'outra tarefa foi iniciada'
             return false
