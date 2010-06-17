@@ -244,8 +244,10 @@ class LogFilter:
 
         #com as ids das requisicoes iniciais realizo a separacao das sessoes por tarefa
         for config in configs:
+            file_lines = []
             begin_of_tasks = db.customQuery('select * from access where page_id = '+str(config[1])).fetchall()
             #com o inicio das tarefas posso realizar a captura da sequencia de urls acessadas
+            counter = 1
             for i in range(len(begin_of_tasks)):
                 if i < len(begin_of_tasks) - 1:
                     subsequent_requests = db.customQuery('select * from access where id > '+str(begin_of_tasks[i][0])+' AND user_id = '+str(+begin_of_tasks[i][2])+' AND id < '+ str(begin_of_tasks[i+1][0]) +' limit '+str(config[3]))
@@ -263,4 +265,40 @@ class LogFilter:
                     line = str(begin_of_tasks[i][1])
 
                 if line != False:
-                    print self.normalizeLine(line, config[3])
+                    file_lines.append(self.normalizeLine(line, config[3])+' access_'+str(counter))
+                    counter += 1
+            #construo o arquivo de entrada para a tarefa atual
+            #documentacao do somtoolbox http://www.ifs.tuwien.ac.at/dm/somtoolbox/index.html
+            filename = config[4]+'.in.som'
+            header = '$TYPE '+config[4]+'\n$XDIM '+str(len(file_lines))+'\n$YDIM 1 \n$VECDIM '+str(config[3]+1)+'\n'
+            som_file = open(filename, 'w');
+            som_file.write(header);
+            for access in file_lines:
+                som_file.write(access+'\n')
+            som_file.close()
+            print ' -file '+filename+' generated'
+
+            template = config[4]+'.t.som'
+            header = '$TYPE '+config[4]+'_template\n$XDIM 7\n$YDIM '+str(len(file_lines))+'\n$VECDIM '+str(config[3]+1)+'\n'
+            template_file = open(template, 'w')
+            template_file.write(header)
+            for i in range(config[3]+1):
+                template_file.write(str(i)+' url_'+str(i)+' 1 1 1 1 1\n')
+            template_file.close()
+            print ' -file '+template+' generated'
+
+            prop = config[4]+'.prop'
+            prop_file = open(prop, 'w')
+            prop_file.write('wokingDirectory=.\n')
+            prop_file.write('outputDirectory=./results\n')
+            prop_file.write('namePrefix='+config[4]+'\n')
+            prop_file.write('vectorFileName='+filename+'\n')
+            prop_file.write('sparseData=yes\n')
+            prop_file.write('isNormalized=yes\n')
+            prop_file.write('templateFileName='+template+'\n')
+            prop_file.write('xSize=5\n')
+            prop_file.write('ySize=5\n')
+            prop_file.write('learnrate=0.75\n')
+            prop_file.write('numIterations='+str(5 * len(file_lines))+'\n')
+            prop_file.close()
+            print ' -file '+prop+' generated'

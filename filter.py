@@ -4,7 +4,7 @@
 
 import logfilter
 from optparse import OptionParser
-usage = 'usage: %prog -i inputfilepath [options]'
+usage = 'usage: %prog -i inputfilepath -c configfile [options]'
 parser = OptionParser(usage)
 
 parser.add_option('-i', '--input', dest='inputfile', help='read the FILE as input', metavar='FILE')
