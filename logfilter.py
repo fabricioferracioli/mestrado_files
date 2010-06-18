@@ -85,7 +85,8 @@ class LogFilter:
                 line = line + (maxUrls*2 - len(line.split())) * ' 0 :00'
         else:
             if len(line.split()) < maxUrls:
-                line = line + (maxUrls - len(line.split())) * ' 0'
+                #precisa ser -1 pois o somtoolbox reconhece esse valor como null
+                line = line + (maxUrls - len(line.split())) * ' -1'
         return line
 
     def initialFilter(self, logFile, filteredLog = 'output.log'):
@@ -270,7 +271,7 @@ class LogFilter:
             #construo o arquivo de entrada para a tarefa atual
             #documentacao do somtoolbox http://www.ifs.tuwien.ac.at/dm/somtoolbox/index.html
             filename = config[4]+'.in.som'
-            header = '$TYPE '+config[4]+'\n$XDIM '+str(len(file_lines))+'\n$YDIM 1 \n$VECDIM '+str(config[3]+1)+'\n'
+            header = '$TYPE '+config[4]+'\n$XDIM '+str(len(file_lines))+'\n$YDIM 1 \n$VEC_DIM '+str(config[3]+1)+'\n'
             som_file = open(filename, 'w');
             som_file.write(header);
             for access in file_lines:
@@ -279,7 +280,7 @@ class LogFilter:
             print ' -file '+filename+' generated'
 
             template = config[4]+'.t.som'
-            header = '$TYPE '+config[4]+'_template\n$XDIM 7\n$YDIM '+str(len(file_lines))+'\n$VECDIM '+str(config[3]+1)+'\n'
+            header = '$TYPE '+config[4]+'_template\n$XDIM 7\n$YDIM '+str(len(file_lines))+'\n$VEC_DIM '+str(config[3]+1)+'\n'
             template_file = open(template, 'w')
             template_file.write(header)
             for i in range(config[3]+1):
@@ -296,8 +297,8 @@ class LogFilter:
             prop_file.write('sparseData=yes\n')
             prop_file.write('isNormalized=yes\n')
             prop_file.write('templateFileName='+template+'\n')
-            prop_file.write('xSize=5\n')
-            prop_file.write('ySize=5\n')
+            prop_file.write('xSize=2\n')
+            prop_file.write('ySize=2\n')
             prop_file.write('learnrate=0.75\n')
             prop_file.write('numIterations='+str(5 * len(file_lines))+'\n')
             prop_file.close()
