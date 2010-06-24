@@ -84,9 +84,10 @@ class LogFilter:
             if len(line.split()) < maxUrls * 2:
                 line = line + (maxUrls*2 - len(line.split())) * ' 0 :00'
         else:
-            if len(line.split()) < maxUrls:
-                #precisa ser -1 pois o somtoolbox reconhece esse valor como null
-                line = line + (maxUrls - len(line.split())) * ' -1'
+            if len(line.split()) < maxUrls+1:
+                #precisa adicionar -1 (ao inves de 0) pois o somtoolbox reconhece esse valor como null
+                #coloco +1 pois a url inicial ja esta no historico do cara
+                line = line + (maxUrls+1 - len(line.split())) * ' -1'
         return line
 
     def initialFilter(self, logFile, filteredLog = 'output.log'):
@@ -178,6 +179,8 @@ class LogFilter:
         for line in tasks_file:
             params = line.split()
             tasks.append({'id': params[3], 'initial_url': params[0], 'final_url': params[1], 'max_requisitions': params[2]})
+            #se o arquivo nao existe eh criado, se existe eh truncado, e logo apos fechado
+            open(params[3], 'w').close()
         tasks_file.close()
 
         logfile = open(filteredUrlsFile, 'r')
@@ -188,7 +191,7 @@ class LogFilter:
                 if task_index == -1:
                     outputfile.close()
                 task_index = self.findActualTask(tasks, line)
-                outputfile = open(tasks[task_index]['id'], 'w')
+                outputfile = open(tasks[task_index]['id'], 'a')
                 outputfile.write(line)
                 num_searches = 1
             else:
