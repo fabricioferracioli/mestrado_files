@@ -42,3 +42,5 @@ print '-- Tasks Identified --'
 lf.sessions()
 
 print '-- Sessions identified --'
+
+print 'Next, adjust the parameters and run ghsom'

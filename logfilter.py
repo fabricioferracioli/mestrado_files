@@ -188,7 +188,7 @@ class LogFilter:
                 if task_index == -1:
                     outputfile.close()
                 task_index = self.findActualTask(tasks, line)
-                outputfile = open(tasks[task_index]['id'], 'a')
+                outputfile = open(tasks[task_index]['id'], 'w')
                 outputfile.write(line)
                 num_searches = 1
             else:
@@ -270,6 +270,8 @@ class LogFilter:
                     counter += 1
             #construo o arquivo de entrada para a tarefa atual
             #documentacao do somtoolbox http://www.ifs.tuwien.ac.at/dm/somtoolbox/index.html
+            #mas como eu vou usar o ghsom1.6, preciso verificar essa documentacao
+            #http://www.ifs.tuwien.ac.at/~andi/ghsom/index.html
             filename = config[4]+'.in.som'
             header = '$TYPE '+config[4]+'\n$XDIM '+str(len(file_lines))+'\n$YDIM 1 \n$VEC_DIM '+str(config[3]+1)+'\n'
             som_file = open(filename, 'w');
@@ -284,22 +286,36 @@ class LogFilter:
             template_file = open(template, 'w')
             template_file.write(header)
             for i in range(config[3]+1):
-                template_file.write(str(i)+' url_'+str(i)+' 1 1 1 1 1\n')
+                template_file.write(str(i)+' url_'+str(i)+' 1 1 1 1 1.0\n')
             template_file.close()
             print ' -file '+template+' generated'
 
             prop = config[4]+'.prop'
             prop_file = open(prop, 'w')
-            prop_file.write('wokingDirectory=.\n')
-            prop_file.write('outputDirectory=./results\n')
-            prop_file.write('namePrefix='+config[4]+'\n')
-            prop_file.write('vectorFileName='+filename+'\n')
-            prop_file.write('sparseData=yes\n')
-            prop_file.write('isNormalized=yes\n')
-            prop_file.write('templateFileName='+template+'\n')
-            prop_file.write('xSize=2\n')
-            prop_file.write('ySize=2\n')
-            prop_file.write('learnrate=0.75\n')
-            prop_file.write('numIterations='+str(5 * len(file_lines))+'\n')
+
+            #os valores default devem ser alterados
+            prop_file.write('EXPAND_CYCLES=4\n')
+            prop_file.write('MAX_CYCLES=0\n')
+            prop_file.write('TAU_1=0.2\n')
+            prop_file.write('TAU_2=0.1\n')
+            prop_file.write('INITIAL_LEARNRATE=0.8\n')
+            prop_file.write('NR=0.0006\n')
+            prop_file.write('HTML_PREFIX='+config[4]+'\n')
+            prop_file.write('DATAFILE_EXTENSION=\n')
+            prop_file.write('randomSeed=17\n')
+            prop_file.write('inputFile=./'+filename+'\n')
+            prop_file.write('descriptionFile=./'+template+'\n')
+            prop_file.write('savePath=./output\n')
+            prop_file.write('printMQE=false\n')
+            prop_file.write('normInputVectors=NONE\n')
+            prop_file.write('saveAsHTML=true\n')
+            prop_file.write('saveAsSOMLib=true\n')
+            prop_file.write('INITIAL_X_SIZE=2\n')
+            prop_file.write('INITIAL_Y_SIZE=2\n')
+            prop_file.write('LABELS_NUM=1\n')
+            prop_file.write('LABELS_ONLY=true\n')
+            prop_file.write('LABELS_THRESHOLD=0.35\n')
+            prop_file.write('ORIENTATION=true\n')
+
             prop_file.close()
             print ' -file '+prop+' generated'
