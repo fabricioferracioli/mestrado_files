@@ -52,8 +52,8 @@ class LogFilter:
         return stf - fdt
 
     def reachMaxIdleTime(self, firstAccessTime, secondAccessTime):
-        #20 minutos
-        return self.timeBetweenRequests(firstAccessTime, secondAccessTime) > datetime.timedelta(0,0,0,0,20)
+        #24 minutos - padrao php
+        return self.timeBetweenRequests(firstAccessTime, secondAccessTime) > datetime.timedelta(0,0,0,0,24)
 
     def userCompletedTheTask(self, urlSequence, initialAccess, taskConfigs):
         line = str(initialAccess[1])
