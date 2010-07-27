@@ -94,7 +94,39 @@ class preKmeans:
         print 'Foram encontrados %d centros'%(self.kmeansCentersAmount)
         print 'Os %s foram selecionados como centros iniciais'%(self.kmeansInitialCenters)
 
+    def generateKmeansInputFile(self):
+        inputfile_name = self.ghsomResultsPrefix+'.in.kmeans'
+        inputfile = open(inputfile_name, 'w')
+
+        for access in self.inputVectors:
+            inputfile.write(str(access[:len(access)-1]).replace(',', '').replace('[', '').replace(']', '').replace('\'', '')+'\n')
+
+        inputfile.close()
+        print 'Arquivo com os pontos de entrada para o Kmeans gerado'
+
+    def generateKmeansPropertyFile(self):
+        configfile = self.ghsomResultsPrefix+'.prop.kmeans'
+        kmfile = open(configfile, 'w')
+        kmfile.write('#Arquivo de entrada do algoritmo de clusterização kmeans para '+self.ghsomResultsPrefix+'\n')
+
+        kmfile.write('stats summary\n')
+        kmfile.write('show_assignments yes\n')
+        kmfile.write('dim '+str(len(self.inputVectors[0])-1)+'\n')
+        kmfile.write('data_size '+str(len(self.inputVectors))+'\n')
+        kmfile.write('read_data_pts '+self.ghsomResultsPrefix+'.in.kmeans\n')
+        kmfile.write('kcenters '+str(self.kmeansCentersAmount)+'\n')
+        kmfile.write('colors '+str(self.kmeansCentersAmount)+'\n')
+        kmfile.write('max_tot_stage 20 0 0 0\n')
+        kmfile.write('max_run_stage 3\n')
+        kmfile.write('min_accum_rdl 0.20\n')
+        kmfile.write('seed 42\n')
+        kmfile.write('run_kmeans lloyd\n')
+
+        print 'Arquivo com as propriedades para execucao do Kmeans gerado'
+
 pk = preKmeans('submit_exercice.prop')
 pk.buildVectors()
 pk.readInputVector()
 pk.findCenters()
+pk.generateKmeansInputFile()
+pk.generateKmeansPropertyFile()
