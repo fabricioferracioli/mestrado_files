@@ -124,9 +124,41 @@ class preKmeans:
 
         print 'Arquivo com as propriedades para execucao do Kmeans gerado'
 
+    def runKmeans(self, normalize = True):
+        #o parametro normalize determina se o vetor de entrada deve ser "normalizado"
+        from numpy import array
+        from scipy.cluster.vq import kmeans, whiten, vq
+        obs = [] #observacoes
+        cen = [] #centros
+        cen_indexes = []
+        #selecionar centros iniciais e normalizar vetor de entrada
+
+        for k in range(len(self.inputVectors)):
+            input_obs = self.inputVectors[k]
+            for i in range(len(input_obs)- 1):
+                input_obs[i] = int(input_obs[i])
+            obs.append(input_obs[1:len(input_obs)-1])
+
+            for center in self.kmeansInitialCenters:
+                if (input_obs[len(input_obs)-1] == center):
+                    cen_indexes.append(k)
+        if normalize == True:
+            obs = whiten(array(obs))
+        else:
+            obs = array(obs)
+        for j in cen_indexes:
+            cen.append(obs[j])
+
+
+        #aplica o kmeans na obsercao de entrada
+        result = kmeans(obs, array(cen))
+        #exibe as associacoes das entradas aos centros e seus erros de quantizacao
+        print vq(obs, result[0])
+
 pk = preKmeans('submit_exercice.prop')
 pk.buildVectors()
 pk.readInputVector()
 pk.findCenters()
-pk.generateKmeansInputFile()
-pk.generateKmeansPropertyFile()
+#pk.generateKmeansInputFile()
+#pk.generateKmeansPropertyFile()
+pk.runKmeans(True)
