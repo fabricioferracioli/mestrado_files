@@ -52,8 +52,7 @@ class LogFilter:
         return stf - fdt
 
     def reachMaxIdleTime(self, firstAccessTime, secondAccessTime):
-        #24 minutos - padrao php
-        return self.timeBetweenRequests(firstAccessTime, secondAccessTime) > datetime.timedelta(0,0,0,0,24)
+        return self.timeBetweenRequests(firstAccessTime, secondAccessTime) > datetime.timedelta(0,0,0,0,30)
 
     def userCompletedTheTask(self, urlSequence, initialAccess, taskConfigs):
         line = str(initialAccess[1])
@@ -73,6 +72,10 @@ class LogFilter:
 
             if (startNewSession == False):
                 line = line + ' ' + str(urlSequence[i][1])
+                #se a url atual eh a que finaliza a tarefa, posso retornar
+                if (urlSequence[i][1] == config[2]):
+                    print 'tarefa finalizada com sucesso'
+                    return line
             else:
                 #as urls depois de expirada a sessao sao ignoradas
                 print 'sessao expirada'
