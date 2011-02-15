@@ -155,7 +155,19 @@ class preKmeans:
         #exibe as associacoes das entradas aos centros e seus erros de quantizacao
         print vq(obs, result[0])
 
-pk = preKmeans('submit_exercice.prop')
+from optparse import OptionParser
+
+usage = 'usage: %prog -c configfile [options]'
+parser = OptionParser(usage)
+
+parser.add_option('-c', '--config', dest='configfile', help='FILE with the ghsom properties', metavar='FILE')
+
+(options, args) = parser.parse_args()
+
+if options.configfile == None:
+    parser.error('please, inform a path for the config file')
+
+pk = preKmeans(options.configfile)
 pk.buildVectors()
 pk.readInputVector()
 pk.findCenters()

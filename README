@@ -1,1 +1,34 @@
 Esse repositorio contem arquivos utilizados para implementação da proposta de mestrado de Fabrício Ferracioli na Universidade Estadual de Londrina
+
+Utilização:
+
+Para utilizar o programa é necessário um log de acesso do servidor Web Apache, são reconhecidos tanto o formato padrão quanto o extendido. É comum encontrar esse arquivo com o nome de access_log.
+Deverá ser feito um arquivo texto de configuração no cada tarefa a ser executada em uma linha seguindo o formato:
+
+* ui uf mr id, onde
+
+ui - URL inicial da tarefa. Ex: /aplicacao/minha_pagina.ext?param=value
+uf - URL final da tarefa. Ex: /aplicacao/minha_url_sucesso.ext?param=value
+mr - Quantidade máxima de requisições entre as URLs inicial e final. Ex: 3
+id - String identificadora da tarefa. Ex: teste
+
+O programa pode ser iniciado do modo:
+
+* [python] filter.py -i access_log -c config [-f true]
+
+Onde -i refere-se ao log de acesso do Apache, -c ao arquivo com as configurações e -f é um parâmetro adicional que remove bancos de dados de análises de log anteriores.
+
+Ao final da primeira etapa, serão gerados arquivos para execução do ghsom, com nomes seguindo o padrão:
+- id.in.som
+- id.prop
+- id.t.som
+
+É interessante alterar as configurações de alguns parâmetros de calibração do ghsom no arquivo id.prop. Para mais informações acesse a documentação oficial do pacote em http://www.ifs.tuwien.ac.at/~andi/ghsom/index.html. Certifique-se de que existe um diretório output em seu diretório de trabalho, os arquivos de saída do ghsom serão gravados nele caso as configurações padrão sejam mantidas.
+
+Após alteração dos paramêtros, basta executar o ghsom:
+
+* ./ghsom id.prop
+
+Apos esse passo é possível executar o k-means executando, nesse ponto é necessário ter os módulos de python scypy e numpy instalados:
+
+* [python] pre_kmeans.py -c id.prop
