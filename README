@@ -29,6 +29,6 @@ Após alteração dos paramêtros, basta executar o ghsom:
 
 * ./ghsom id.prop
 
-Apos esse passo é possível executar o k-means executando, nesse ponto é necessário ter os módulos de python scypy e numpy instalados:
+Apos esse passo é possível executar o k-means. Nesse ponto é necessário ter os módulos de python scipy e numpy instalados:
 
 * [python] pre_kmeans.py -c id.prop

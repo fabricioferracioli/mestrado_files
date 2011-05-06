@@ -149,11 +149,20 @@ class preKmeans:
         for j in cen_indexes:
             cen.append(obs[j])
 
-
         #aplica o kmeans na obsercao de entrada
         result = kmeans(obs, array(cen))
+        print 'Exibindo o resultado do kmeans [centroides, variancia]'
+        print result
         #exibe as associacoes das entradas aos centros e seus erros de quantizacao
+        print 'Associação dos clusters [cluster, distancia]'
         print vq(obs, result[0])
+
+        import pylab
+
+        pylab.plot([p[0] for p in obs], [p[1] for p in obs], '.')
+        pylab.plot([p[0] for p in result[0]],[p[1] for p in result[0]],'go')
+        pylab.show()
+
 
 from optparse import OptionParser
 
