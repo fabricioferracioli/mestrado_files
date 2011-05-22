@@ -142,6 +142,7 @@ class preKmeans:
             for center in self.kmeansInitialCenters:
                 if (input_obs[len(input_obs)-1] == center):
                     cen_indexes.append(k)
+
         if normalize == True:
             obs = whiten(array(obs))
         else:
@@ -151,17 +152,41 @@ class preKmeans:
 
         #aplica o kmeans na obsercao de entrada
         result = kmeans(obs, array(cen))
+        print 'Observacoes utilizadas'
+        print obs
         print 'Exibindo o resultado do kmeans [centroides, variancia]'
         print result
         #exibe as associacoes das entradas aos centros e seus erros de quantizacao
         print 'Associação dos clusters [cluster, distancia]'
-        print vq(obs, result[0])
+        assoc = vq(obs, result[0])
+
+        clusters = [[] for i in range(len(cen))]
+
+        for k in range(len(assoc[0])):
+            clusters[assoc[0][k]].append(self.inputVectors[k][len(self.inputVectors[k]) - 1])
+
+        #aqui vou procurar as paginas que sao acessadas para cada cluster
+        import mining_database
+        db = mining_database.MiningDatabase()
+        cfile = open(self.ghsomProperties + '.clusters', 'w')
+        pctg = []
+        for i in range(len(clusters)):
+            cfile.write('\r\n---- Cluster ' + str(i + 1) + ' ----\r\n')
+            pctg.append(float(len(clusters[i])) / len(assoc[0]) * 100)
+            cfile.write('Representa ' + str(pctg[i]) + ' porcento\r\n')
+            for j in range(len(clusters[i])):
+                cfile.write('------ Acesso ' + str(j + 1) + ' ------\r\n')
+                for k in range(len(self.inputVectors)):
+                    if (self.inputVectors[k][len(self.inputVectors[k]) - 1] == clusters[i][j]):
+                        for l in range(len(self.inputVectors[k]) - 1):
+                            res = db.searchPage('id', '=', self.inputVectors[k][l]).fetchone()
+                            if (res != None):
+                                cfile.write(res[1] + '\r\n')
+        cfile.close()
 
         import pylab
-
         pylab.plot([p[0] for p in obs], [p[1] for p in obs], '.')
         pylab.plot([p[0] for p in result[0]],[p[1] for p in result[0]],'go')
-        pylab.show()
 
 
 from optparse import OptionParser
