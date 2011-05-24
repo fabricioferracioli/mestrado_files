@@ -170,9 +170,11 @@ class preKmeans:
         db = mining_database.MiningDatabase()
         cfile = open(self.ghsomProperties + '.clusters', 'w')
         pctg = []
+        labels = []
         for i in range(len(clusters)):
             cfile.write('\r\n---- Cluster ' + str(i + 1) + ' ----\r\n')
             pctg.append(float(len(clusters[i])) / len(assoc[0]) * 100)
+            labels.append('Cluster ' + str(i+1))
             cfile.write('Representa ' + str(pctg[i]) + ' porcento\r\n')
             for j in range(len(clusters[i])):
                 cfile.write('------ Acesso ' + str(j + 1) + ' ------\r\n')
@@ -184,10 +186,16 @@ class preKmeans:
                                 cfile.write(res[1] + '\r\n')
         cfile.close()
 
-        import pylab
-        pylab.plot([p[0] for p in obs], [p[1] for p in obs], '.')
-        pylab.plot([p[0] for p in result[0]],[p[1] for p in result[0]],'go')
+        import matplotlib.pyplot as plt
+        plt.figure(1)
+        plt.subplot(1,2,1)
+        plt.plot([p[0] for p in obs], [p[1] for p in obs], '.')
+        plt.plot([p[0] for p in result[0]],[p[1] for p in result[0]],'go')
 
+        plt.subplot(1,2,2)
+        plt.title('Representatividade dos clusters')
+        plt.pie(pctg,labels=labels, autopct="%1.1f%%")
+        plt.show()
 
 from optparse import OptionParser
 
