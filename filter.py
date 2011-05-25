@@ -35,7 +35,7 @@ lf.filterTasks()
 
 print '-- Tasks Filter finished --'
 
-lf.itentifyTasks(options.forcedbcreation)
+lf.identifyTasks(options.forcedbcreation)
 
 print '-- Tasks Identified --'
 

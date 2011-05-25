@@ -56,6 +56,7 @@ class LogFilter:
 
     def userCompletedTheTask(self, urlSequence, initialAccess, taskConfigs):
         line = str(initialAccess[1])
+        initial_access_time = final_access_time = 0
         for i in range(len(urlSequence)):
             #verifico se ele abortou e comecou qualquer outra tarefa
             for config in taskConfigs:
@@ -67,6 +68,7 @@ class LogFilter:
             startNewSession = False
             if (i == 0):
                 startNewSession = self.reachMaxIdleTime(initialAccess[3], urlSequence[i][3])
+                initial_access_time = initialAccess[3]
             else:
                 startNewSession = self.reachMaxIdleTime(urlSequence[i-1][3], urlSequence[i][3])
 
@@ -74,13 +76,17 @@ class LogFilter:
                 line = line + ' ' + str(urlSequence[i][1])
                 #se a url atual eh a que finaliza a tarefa, posso retornar
                 if (urlSequence[i][1] == config[2]):
+                    time_spent = self.timeBetweenRequests(initial_access_time, urlSequence[i][3])
                     print 'tarefa finalizada com sucesso'
-                    return line
+                    return [line, time_spent.total_seconds()]
             else:
                 #as urls depois de expirada a sessao sao ignoradas
                 print 'sessao expirada'
-                return line
-        return line
+                time_spent = self.timeBetweenRequests(initial_access_time, urlSequence[i][3])
+                return [line, time_spent.total_seconds()]
+
+            time_spent = self.timeBetweenRequests(initial_access_time, urlSequence[i][3])
+        return [line, time_spent.total_seconds()]
 
     def normalizeLine(self, line, maxUrls, withTime = False):
         if withTime == True:
@@ -207,7 +213,7 @@ class LogFilter:
         outputfile.close()
         return True
 
-    def itentifyTasks(self, forceDbCreation):
+    def identifyTasks(self, forceDbCreation):
 
         db = mining_database.MiningDatabase(forceDbCreation)
         db.createTables()
@@ -269,10 +275,11 @@ class LogFilter:
                 if len(requests) > 0:
                     line = self.userCompletedTheTask(requests, begin_of_tasks[i], configs)
                 else:
-                    line = str(begin_of_tasks[i][1])
+                    line = [str(begin_of_tasks[i][1]), 0]
 
                 if line != False:
-                    file_lines.append(self.normalizeLine(line, config[3])+' access_'+str(counter))
+                    print line
+                    file_lines.append(self.normalizeLine(line[0], config[3])+' '+str(line[1])+' access_'+str(counter))
                     counter += 1
             #construo o arquivo de entrada para a tarefa atual
             #documentacao do somtoolbox http://www.ifs.tuwien.ac.at/dm/somtoolbox/index.html
