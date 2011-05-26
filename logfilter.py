@@ -285,8 +285,9 @@ class LogFilter:
             #documentacao do somtoolbox http://www.ifs.tuwien.ac.at/dm/somtoolbox/index.html
             #mas como eu vou usar o ghsom1.6, preciso verificar essa documentacao
             #http://www.ifs.tuwien.ac.at/~andi/ghsom/index.html
+            # tamanho de vecdim eh config[3]+2 porque conto a url inicial e o tempo
             filename = config[4]+'.in.som'
-            header = '$TYPE '+config[4]+'\n$XDIM '+str(len(file_lines))+'\n$YDIM 1 \n$VEC_DIM '+str(config[3]+1)+'\n'
+            header = '$TYPE '+config[4]+'\n$XDIM '+str(len(file_lines))+'\n$YDIM 1 \n$VEC_DIM '+str(config[3]+2)+'\n'
             som_file = open(filename, 'w');
             som_file.write(header);
             for access in file_lines:
@@ -295,10 +296,10 @@ class LogFilter:
             print ' -file '+filename+' generated'
 
             template = config[4]+'.t.som'
-            header = '$TYPE '+config[4]+'_template\n$XDIM 7\n$YDIM '+str(len(file_lines))+'\n$VEC_DIM '+str(config[3]+1)+'\n'
+            header = '$TYPE '+config[4]+'_template\n$XDIM 7\n$YDIM '+str(len(file_lines))+'\n$VEC_DIM '+str(config[3]+2)+'\n'
             template_file = open(template, 'w')
             template_file.write(header)
-            for i in range(config[3]+1):
+            for i in range(config[3]+2):
                 template_file.write(str(i)+' url_'+str(i)+' 1 1 1 1 1.0\n')
             template_file.close()
             print ' -file '+template+' generated'
