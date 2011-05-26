@@ -180,10 +180,12 @@ class preKmeans:
                 cfile.write('------ Acesso ' + str(j + 1) + ' ------\r\n')
                 for k in range(len(self.inputVectors)):
                     if (self.inputVectors[k][len(self.inputVectors[k]) - 1] == clusters[i][j]):
-                        for l in range(len(self.inputVectors[k]) - 1):
+                        for l in range(len(self.inputVectors[k]) - 2):
                             res = db.searchPage('id', '=', self.inputVectors[k][l]).fetchone()
                             if (res != None):
                                 cfile.write(res[1] + '\r\n')
+                            if (l == len(self.inputVectors[k]) - 3):
+                                cfile.write(str(self.inputVectors[k][len(self.inputVectors[k]) - 2]) + ' seg\r\n')
         cfile.close()
 
         import matplotlib.pyplot as plt

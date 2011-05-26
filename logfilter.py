@@ -78,15 +78,15 @@ class LogFilter:
                 if (urlSequence[i][1] == config[2]):
                     time_spent = self.timeBetweenRequests(initial_access_time, urlSequence[i][3])
                     print 'tarefa finalizada com sucesso'
-                    return [line, time_spent.total_seconds()]
+                    return [line, int(time_spent.total_seconds())]
             else:
                 #as urls depois de expirada a sessao sao ignoradas
                 print 'sessao expirada'
                 time_spent = self.timeBetweenRequests(initial_access_time, urlSequence[i][3])
-                return [line, time_spent.total_seconds()]
+                return [line, int(time_spent.total_seconds())]
 
             time_spent = self.timeBetweenRequests(initial_access_time, urlSequence[i][3])
-        return [line, time_spent.total_seconds()]
+        return [line, int(time_spent.total_seconds())]
 
     def normalizeLine(self, line, maxUrls, withTime = False):
         if withTime == True:
