@@ -147,6 +147,7 @@ class preKmeans:
             obs = whiten(array(obs))
         else:
             obs = array(obs)
+
         for j in cen_indexes:
             cen.append(obs[j])
 
@@ -201,10 +202,11 @@ class preKmeans:
 
 from optparse import OptionParser
 
-usage = 'usage: %prog -c configfile [options]'
+usage = 'usage: %prog -c configfile -n normalize [options]'
 parser = OptionParser(usage)
 
 parser.add_option('-c', '--config', dest='configfile', help='FILE with the ghsom properties', metavar='FILE')
+parser.add_option('-n', '--normalize', dest='normalize', action='store_false', help='Boolean determining if K-means input values needs to be normalized', default=True)
 
 (options, args) = parser.parse_args()
 
@@ -217,4 +219,4 @@ pk.readInputVector()
 pk.findCenters()
 #pk.generateKmeansInputFile()
 #pk.generateKmeansPropertyFile()
-pk.runKmeans(True)
+pk.runKmeans(options.normalize)

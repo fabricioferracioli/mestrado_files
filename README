@@ -31,4 +31,6 @@ Após alteração dos paramêtros, basta executar o ghsom:
 
 Apos esse passo é possível executar o k-means. Nesse ponto é necessário ter os módulos de python scipy e numpy instalados:
 
-* [python] pre_kmeans.py -c id.prop
+* [python] pre_kmeans.py -c id.prop [-n]
+
+O parâmetro -n determina que a entrada para o k-means não deve ser normalizada. Caso não seja fornecida a entrada será normalizada. É recomendado utilizar a normalização, em casos onde o algoritmo não funcionar, tente utilizar o parametro -n.

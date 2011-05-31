@@ -75,7 +75,7 @@ class LogFilter:
             if (startNewSession == False):
                 line = line + ' ' + str(urlSequence[i][1])
                 #se a url atual eh a que finaliza a tarefa, posso retornar
-                if (urlSequence[i][1] == config[2]):
+                if (i > 0 and urlSequence[i][1] == config[2]):
                     time_spent = self.timeBetweenRequests(initial_access_time, urlSequence[i][3])
                     print 'tarefa finalizada com sucesso'
                     return [line, int(time_spent.total_seconds())]
