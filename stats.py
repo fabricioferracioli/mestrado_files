@@ -6,7 +6,7 @@
 
 class Stats:
 
-    def total_variance(self, distribution):
+    def totalVariance(self, distribution):
         sumX = []
         Xbar = []
         Xbar2 = []
@@ -36,11 +36,10 @@ class Stats:
 
         wilk_lambda = within_groups_variance / total_variance
 
-        print 'Within groups variance: %f'%within_groups_variance
-        print 'Among groups variance: %f'%among_groups_variance
-        print 'Total variance: %f'%total_variance
-        print 'F-value: %f'%f_value
-        print 'Wilk\'s Lambda: %f'%wilk_lambda
-
-st = Stats()
-st.total_variance([[41,44,48,43,42], [48,49,49,49,45], [40,50,44,48,50], [40,39,46,46,41], [49,41,50,39,42], [40,48,51,47,51], [41,46,54,44,42]])
+        return {
+                'SST': total_variance,
+                'SSB': among_groups_variance,
+                'SSW': within_groups_variance,
+                'fvalue': f_value,
+                'wilk_lambda': wilk_lambda
+            }

@@ -152,14 +152,16 @@ class preKmeans:
             cen.append(obs[j])
 
         #aplica o kmeans na obsercao de entrada
+        #http://docs.scipy.org/doc/scipy/reference/cluster.vq.html
         result = kmeans(obs, array(cen))
+        assoc = vq(obs, result[0])
         print 'Observacoes utilizadas'
         print obs
         print 'Exibindo o resultado do kmeans [centroides, variancia]'
         print result
         #exibe as associacoes das entradas aos centros e seus erros de quantizacao
         print 'Associação dos clusters [cluster, distancia]'
-        assoc = vq(obs, result[0])
+        print assoc
 
         clusters = [[] for i in range(len(cen))]
 
@@ -187,6 +189,18 @@ class preKmeans:
                                 cfile.write(res[1] + '\r\n')
                             if (l == len(self.inputVectors[k]) - 3):
                                 cfile.write(str(self.inputVectors[k][len(self.inputVectors[k]) - 2]) + ' seg\r\n')
+
+        import stats as stats
+        st = stats.Stats()
+        stv = st.totalVariance(result[0])
+
+        cfile.write('\r\n --- Quality Measurements ---\r\n')
+        cfile.write('Within groups variance: ' + str(stv['SSW']) + '\r\n')
+        cfile.write('Between groups variance: ' + str(stv['SSB']) + '\r\n')
+        cfile.write('Total variance: ' + str(stv['SST']) + '\r\n')
+        cfile.write('F-value: ' + str(stv['fvalue']) + '\r\n')
+        cfile.write('Wilk\'s Lambda value: ' + str(stv['wilk_lambda']) + '\r\n')
+
         cfile.close()
 
         import matplotlib.pyplot as plt
