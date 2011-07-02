@@ -10,6 +10,7 @@ parser = OptionParser(usage)
 parser.add_option('-i', '--input', dest='inputfile', help='read the FILE as input', metavar='FILE')
 parser.add_option('-c', '--config', dest='configfile', help='FILE with the configurations for the filter', metavar='FILE')
 parser.add_option('-f', '--force', dest='forcedbcreation', action='store_true', help='Reset previous databases created', default=False)
+parser.add_option('-S', '--som', dest='som', action='store_true', help='Instead of GHSOM run original Kohonen SOM', default=False)
 
 (options, args) = parser.parse_args()
 
@@ -39,8 +40,8 @@ lf.identifyTasks(options.forcedbcreation)
 
 print '-- Tasks Identified --'
 
-lf.sessions()
+lf.sessions(options.som)
 
 print '-- Sessions identified --'
 
-print 'Next, adjust the parameters and run ghsom'
+print 'Next, adjust the parameters and run som/ghsom'

@@ -124,7 +124,7 @@ class preKmeans:
 
         print 'Arquivo com as propriedades para execucao do Kmeans gerado'
 
-    def runKmeans(self, normalize = True):
+    def runKmeans(self, normalize = True, som = False):
         #o parametro normalize determina se o vetor de entrada deve ser "normalizado"
         from numpy import array
         from scipy.cluster.vq import kmeans, whiten, vq
@@ -171,7 +171,12 @@ class preKmeans:
         #aqui vou procurar as paginas que sao acessadas para cada cluster
         import mining_database
         db = mining_database.MiningDatabase()
-        cfile = open(self.ghsomProperties + '.clusters', 'w')
+
+        filename = self.ghsomProperties + '.ghsom'
+        if som:
+            filename = self.ghsomProperties + '.som'
+
+        cfile = open(filename + '.clusters', 'w')
         pctg = []
         labels = []
         for i in range(len(clusters)):
@@ -221,6 +226,7 @@ parser = OptionParser(usage)
 
 parser.add_option('-c', '--config', dest='configfile', help='FILE with the ghsom properties', metavar='FILE')
 parser.add_option('-n', '--normalize', dest='normalize', action='store_false', help='Boolean determining if K-means input values needs to be normalized', default=True)
+parser.add_option('-S', '--som', dest='som', action='store_true', help='Instead of GHSOM run original Kohonen SOM', default=False)
 
 (options, args) = parser.parse_args()
 
@@ -233,4 +239,4 @@ pk.readInputVector()
 pk.findCenters()
 #pk.generateKmeansInputFile()
 #pk.generateKmeansPropertyFile()
-pk.runKmeans(options.normalize)
+pk.runKmeans(options.normalize, options.som)

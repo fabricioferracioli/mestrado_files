@@ -251,9 +251,13 @@ class LogFilter:
                 print 'Arquivo '+ logfilepath +' nao encontrado'
         return True
 
-    def sessions(self):
+    def sessions(self, runSom):
         db = mining_database.MiningDatabase();
         configs = db.searchConfig('1', '!=', '2').fetchall()
+
+        ext = 'ghsom'
+        if runSom:
+            ext = 'som'
 
         #com as ids das requisicoes iniciais realizo a separacao das sessoes por tarefa
         for config in configs:
@@ -286,7 +290,7 @@ class LogFilter:
             #mas como eu vou usar o ghsom1.6, preciso verificar essa documentacao
             #http://www.ifs.tuwien.ac.at/~andi/ghsom/index.html
             # tamanho de vecdim eh config[3]+2 porque conto a url inicial e o tempo
-            filename = config[4]+'.in.som'
+            filename = config[4]+'.in.'+ext
             header = '$TYPE '+config[4]+'\n$XDIM '+str(len(file_lines))+'\n$YDIM 1 \n$VEC_DIM '+str(config[3]+2)+'\n'
             som_file = open(filename, 'w');
             som_file.write(header);
@@ -295,7 +299,7 @@ class LogFilter:
             som_file.close()
             print ' -file '+filename+' generated'
 
-            template = config[4]+'.t.som'
+            template = config[4]+'.t.'+ext
             header = '$TYPE '+config[4]+'_template\n$XDIM 7\n$YDIM '+str(len(file_lines))+'\n$VEC_DIM '+str(config[3]+2)+'\n'
             template_file = open(template, 'w')
             template_file.write(header)
@@ -304,11 +308,18 @@ class LogFilter:
             template_file.close()
             print ' -file '+template+' generated'
 
-            prop = config[4]+'.prop'
+            prop = config[4]+'.'+ext+'.prop'
             prop_file = open(prop, 'w')
 
-            #os valores default devem ser alterados
-            prop_file.write('EXPAND_CYCLES=4\n')
+            expand_cicles = '4'
+            initial_x_size = '2'
+            initial_y_size = '2'
+            if runSom:
+                expand_cicles = '100'
+                initial_x_size = '3'
+                initial_y_size = '4'
+
+            prop_file.write('EXPAND_CYCLES='+expand_cicles+'\n')
             prop_file.write('MAX_CYCLES=0\n')
             prop_file.write('TAU_1=0.2\n')
             prop_file.write('TAU_2=0.1\n')
@@ -324,12 +335,14 @@ class LogFilter:
             prop_file.write('normInputVectors=NONE\n')
             prop_file.write('saveAsHTML=true\n')
             prop_file.write('saveAsSOMLib=true\n')
-            prop_file.write('INITIAL_X_SIZE=2\n')
-            prop_file.write('INITIAL_Y_SIZE=2\n')
+            prop_file.write('INITIAL_X_SIZE='+initial_x_size+'\n')
+            prop_file.write('INITIAL_Y_SIZE='+initial_y_size+'\n')
             prop_file.write('LABELS_NUM=1\n')
             prop_file.write('LABELS_ONLY=true\n')
             prop_file.write('LABELS_THRESHOLD=0.35\n')
             prop_file.write('ORIENTATION=true\n')
+
+            #o usuario pode alterar os valores default para calibrar melhor o metodo
 
             prop_file.close()
             print ' -file '+prop+' generated'

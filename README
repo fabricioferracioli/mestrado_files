@@ -14,9 +14,9 @@ id - String identificadora da tarefa. Ex: teste
 
 O programa pode ser iniciado do modo:
 
-* [python] filter.py -i access_log -c config [-f true]
+* [python] filter.py -i access_log -c config [-f true -S]
 
-Onde -i refere-se ao log de acesso do Apache, -c ao arquivo com as configurações e -f é um parâmetro adicional que remove bancos de dados de análises de log anteriores.
+Onde -i refere-se ao log de acesso do Apache, -c ao arquivo com as configurações, -f é um parâmetro adicional que remove bancos de dados de análises de log anteriores e -S indica que o som tradicional será utilizado ao invés do ghsom.
 
 Ao final da primeira etapa, serão gerados arquivos para execução do ghsom, com nomes seguindo o padrão:
 - id.in.som
@@ -31,6 +31,8 @@ Após alteração dos paramêtros, basta executar o ghsom:
 
 Apos esse passo é possível executar o k-means. Nesse ponto é necessário ter os módulos de python scipy e numpy instalados:
 
-* [python] pre_kmeans.py -c id.prop [-n]
+* [python] pre_kmeans.py -c id.prop [-n -S]
 
-O parâmetro -n determina que a entrada para o k-means não deve ser normalizada. Caso não seja fornecida a entrada será normalizada. É recomendado utilizar a normalização, em casos onde o algoritmo não funcionar, tente utilizar o parametro -n.
+O parâmetro -n determina que a entrada para o k-means não deve ser normalizada. Caso não seja fornecida a entrada será normalizada. É recomendado utilizar a normalização, em casos onde o algoritmo não funcionar, tente utilizar o parametro -n. Já o parâmetro -S determina que na etapa anterior o algoritmo utilizado foi o SOM, e não o k-means.
+
+Quando resultados com quantidade de clusters fora dos valores esperados for apresentadas, remova os arquivos do diretório output.
