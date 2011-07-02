@@ -314,15 +314,21 @@ class LogFilter:
             expand_cicles = '4'
             initial_x_size = '2'
             initial_y_size = '2'
+            tau_1 = '0.2'
+            tau_2 = '0.1'
+            orientation = 'true'
             if runSom:
                 expand_cicles = '100'
                 initial_x_size = '3'
                 initial_y_size = '4'
+                tau_1 = '1.0'
+                tau_2 = '1.0'
+                orientation = 'false'
 
             prop_file.write('EXPAND_CYCLES='+expand_cicles+'\n')
             prop_file.write('MAX_CYCLES=0\n')
-            prop_file.write('TAU_1=0.2\n')
-            prop_file.write('TAU_2=0.1\n')
+            prop_file.write('TAU_1='+tau_1+'\n')
+            prop_file.write('TAU_2='+tau_2+'\n')
             prop_file.write('INITIAL_LEARNRATE=0.8\n')
             prop_file.write('NR=0.0006\n')
             prop_file.write('HTML_PREFIX='+config[4]+'\n')
@@ -340,7 +346,7 @@ class LogFilter:
             prop_file.write('LABELS_NUM=1\n')
             prop_file.write('LABELS_ONLY=true\n')
             prop_file.write('LABELS_THRESHOLD=0.35\n')
-            prop_file.write('ORIENTATION=true\n')
+            prop_file.write('ORIENTATION='+orientation+'\n')
 
             #o usuario pode alterar os valores default para calibrar melhor o metodo
 
